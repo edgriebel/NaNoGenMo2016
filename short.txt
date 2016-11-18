@@ -1,0 +1,5 @@
+Using Scanners, you will end up spawning a lot of objects for every line. You will generate a decent amount of garbage for the GC with large files. Also, it is nearly three times slower than using split().
+
+On the other hand, If you split by space (line.split(" ")), the code will fail if you try to read a file with a different whitespace delimiter. If split() expects you to write a regular expression, and it does matching anyway, use split("\\s") instead, that matches a "bit" more whitespace than just a space character.
+
+P.S.: Sorry, I don't have right to comment on already given answers.
