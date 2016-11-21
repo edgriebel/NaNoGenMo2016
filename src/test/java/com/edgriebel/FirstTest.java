@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.stream.IntStream;
 
 import org.junit.*;
 
@@ -19,7 +20,7 @@ import org.junit.*;
 public class FirstTest {
 
     @Test
-    public void testGenerate() throws Exception {
+    public void testGenerateOld() throws Exception {
         File f = new File("./Bible.txt");
         List<String> s = impl.read(f);
         System.out.println("after read: " + s.size());
@@ -31,10 +32,57 @@ public class FirstTest {
         int size = 1000;
         
         List<String> words = impl.generateText(freqs, size);
-
-        impl.formatText(words).stream().forEach(str -> System.out.println(str + "\n"));
+        
+        impl.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
     }
 
+    @Test
+    public void testGenerate() throws Exception {
+        File f = new File("./Bible.txt");
+        List<String> s = impl.read(f);
+        System.out.println("after read: " + s.size());
+        
+        Map<String, Map<Node, Node>> freqs = new TreeMap<>();
+        
+        impl.store(s, freqs);
+        
+        int size = 400;
+        
+        List<String> words = impl.generateText(freqs, size);
+        System.out.println("OLD");
+        impl.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
+
+        System.out.println("New");
+        List<List<String>> sections = impl.splitIntoSections(words);
+        String newStr = sections.stream().map(s1 -> impl.formatText(s1)).map(s2 -> impl.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
+        System.out.println(newStr);
+    }
+
+    @Test
+    public void testWrapText() {
+        String stub = "0123456789";
+        String str = IntStream.rangeClosed(1, 10).mapToObj(i -> stub).reduce("", (x,y) -> x += y + "\n");
+        System.out.println("String size: " + str.length());
+        
+        String out = impl.wrapText(str);
+        System.out.println(out);
+        for (String s : out.split("\n")) {
+            System.out.printf("%3d: %s\n", s.length(), s);
+        }
+    }
+    
+    @Test
+    public void testFormatText() {
+        List<String> toTest = Arrays.asList( new String [] {
+                "hello", "world", "."
+        });
+        List<String> l = new ArrayList<>(toTest);
+        
+        String out = impl.formatText(l);
+        System.out.println("Out: " + out);
+        assertEquals(out, toTest.stream().reduce("", (r,s) -> r += (r.equals("") ? impl.capword(s) : ( s.matches(First.PUNCTUATION) ? s : " " + s) )) );
+    }
+    
     @Test
     public void testStore_Small() throws Exception {
         List<String> s = Arrays.asList(
