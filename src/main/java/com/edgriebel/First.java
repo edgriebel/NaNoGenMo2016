@@ -7,7 +7,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
@@ -128,4 +131,39 @@ public class First {
             rtn.add(sb.toString());
             return rtn;
         }
+
+    public List<String> generateText(Map<String, Map<Node, Node>> wordList, int size) 
+    {
+        setProbabilities(wordList);
+    
+        List<String> words = new ArrayList<>(size);
+        Random r = new Random();
+        String word = getStartWord(wordList.keySet()).get();
+        words.add(word);
+        for (int i=1; i<size; i++) {
+            float prob = r.nextFloat();
+            Collection<Node> nodesForWord = wordList.get(word).values();
+            word = getNextWord(word, nodesForWord, prob);
+            words.add(word);
+        }
+        return words;
+    }
+
+    public Optional<String> getStartWord(Set<String> words) {
+        int c = (new Random()).nextInt(words.size());
+        return words.stream().filter(word -> !word.matches(First.PUNCTUATION)).skip(c).findFirst();
+    }
+
+    public String getNextWord(String word, Collection<Node> nodesForWord,
+            float probability) {
+        double sum = 0;
+        for (Node n : nodesForWord) {
+            sum += n.getFreq();
+            if (probability < sum) {
+                word = n.getFrom();
+                break;
+            }
+        }
+        return word;
+    }
 }

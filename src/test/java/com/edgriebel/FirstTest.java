@@ -6,14 +6,10 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.junit.*;
@@ -24,49 +20,19 @@ public class FirstTest {
 
     @Test
     public void testGenerate() throws Exception {
-        Random r = new Random();
-        File f = new File("./us-constitution.txt");
+        File f = new File("./Bible.txt");
         List<String> s = impl.read(f);
         System.out.println("after read: " + s.size());
         
         Map<String, Map<Node, Node>> freqs = new TreeMap<>();
+        
         impl.store(s, freqs);
         
-        impl.setProbabilities(freqs);
         int size = 1000;
         
-        List<String> words = new ArrayList<>(size);
-        String word = getStartWord(freqs.keySet()).get();
-        words.add(word);
-        for (int i=1; i<size; i++) {
-            float prob = r.nextFloat();
-            Collection<Node> nodesForWord = freqs.get(word).values();
-            word = getNextWord(word, nodesForWord, prob);
-            words.add(word);
-        }
-        
-        impl.formatText(words).stream().forEach(str -> System.out.println(str + "\n"));
-        
-        // System.out.println(formatText(words));
-    }
+        List<String> words = impl.generateText(freqs, size);
 
-    public String getNextWord(String word, Collection<Node> nodesForWord,
-            float probability) {
-        double sum = 0;
-        for (Node n : nodesForWord) {
-            sum += n.getFreq();
-            if (probability < sum) {
-                word = n.getFrom();
-                break;
-            }
-        }
-        return word;
-    }
-    
-    
-    private Optional<String> getStartWord(Set<String> words) {
-        int c = (new Random()).nextInt(words.size());
-        return words.stream().filter(word -> !word.matches(First.PUNCTUATION)).skip(c).findFirst();
+        impl.formatText(words).stream().forEach(str -> System.out.println(str + "\n"));
     }
 
     @Test
