@@ -9,25 +9,32 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.stream.IntStream;
 
 import org.junit.*;
 
-
-
 public class FirstTest {
 
+    static Reader reader = null;
+    static List<String> fileText = null;
+    static final String readFileName = 
+            "./Bible.txt";
+//        "./KerouacJack-OnTheRoad_djvu.txt");
+    
+    @BeforeClass
+    public static void getText() throws Exception {
+        reader = new Reader();
+        File readFile = new File(readFileName);
+        fileText = reader.read(readFile);
+        System.out.println("after read of file " + readFileName + ": " + fileText.size());
+    }
+    
     @Test
     public void testGenerateOld() throws Exception {
-        File f = new File("./Bible.txt");
-        List<String> s = impl.read(f);
-        System.out.println("after read: " + s.size());
-        
         Map<String, Map<Node, Node>> freqs = new TreeMap<>();
         
-        impl.store(s, freqs);
+        impl.store(fileText, freqs);
         
         int size = 1000;
         
@@ -38,21 +45,17 @@ public class FirstTest {
 
     @Test
     public void testGenerate() throws Exception {
-        File f = new File("./Bible.txt");
-        List<String> s = impl.read(f);
-        System.out.println("after read: " + s.size());
-        
         Map<String, Map<Node, Node>> freqs = new TreeMap<>();
         
-        impl.store(s, freqs);
+        impl.store(fileText, freqs);
         
         int size = 400;
         
         List<String> words = impl.generateText(freqs, size);
-        System.out.println("OLD");
+        System.out.println("Monolithic Generator");
         impl.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
 
-        System.out.println("New");
+        System.out.println("New Generator");
         List<List<String>> sections = impl.splitIntoSections(words);
         String newStr = sections.stream().map(s1 -> impl.formatText(s1)).map(s2 -> impl.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
         System.out.println(newStr);
@@ -97,35 +100,9 @@ public class FirstTest {
     
     @Test
     public void testStore_Luke() throws Exception {
-        List<String> strings = impl.read(new File("bible-luke.txt"));
         Map<String, Map<Node, Node>> freqs = new TreeMap<>();
-        impl.store(strings, freqs );
-        System.out.println(freqs);
-    }
-    
-    @Test
-    public void testRead_shorttxt() throws Exception {
-        File f = new File("./short.txt");
-        List<String> s = impl.read(f);
-        System.out.println(s);
-//        assertThat(s, contains("."));
-    }
-
-    @Test
-    public void testRead_commas() throws Exception {
-        final String str = "hello, world!";
-        List<String> s = impl.read(new Scanner(str));
-        System.out.println(s);
-        assertTrue(s.stream().anyMatch( x -> ",".equals(x))); 
-        assertTrue(s.stream().anyMatch( x -> str.substring(str.length()-1).equals(x))); 
-    }
-
-    @Test
-    public void testRead_bible_luke_txt() throws Exception {
-        System.out.println(new File(".").getCanonicalPath());
-        File f = new File("./bible-luke.txt");
-        List<String> s = impl.read(f);
-        System.out.println(s);
+        impl.store(fileText, freqs);
+        freqs.entrySet().stream().limit(100).forEach(System.out::println);
     }
     
     @Test

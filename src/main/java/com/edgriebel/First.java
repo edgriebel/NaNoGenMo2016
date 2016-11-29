@@ -1,18 +1,13 @@
 package com.edgriebel;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.regex.Pattern;
 
 public class First {
 
@@ -54,32 +49,6 @@ public class First {
                 
             last = curr;
         }
-    }
-    
-    public List<String> read(File file) throws IOException {
-        List<String> rtn = new ArrayList<>();
-        try (Scanner sc = new Scanner(file)) {
-            rtn = read(sc);
-        }
-        return rtn;
-    }
-
-
-    public List<String> read(Scanner sc) {
-        List<String> rtn = new ArrayList<>();
-        String keepers = "([,.!])";
-        String dump = "[:;/\"'()]";
-        Pattern p = Pattern.compile(keepers);
-        Pattern d = Pattern.compile(dump);
-        while (sc.hasNext()) {
-            String s = sc.next().toLowerCase();
-            s = p.matcher(s).replaceAll(" $1");
-            s = d.matcher(s).replaceAll("");
-            if (! s.isEmpty() && !s.matches("^[\\d]+$")) {
-                rtn.addAll(Arrays.asList(s.split(" ")));
-            }
-        }
-        return rtn;
     }
     
     public static void setProbability(Collection<Node> nodes) {
@@ -139,6 +108,8 @@ public class First {
             if (lastWord == null || lastWord.matches(END_OF_SENTENCE)) {
                 w = capword(w);
             }
+            if (w.equalsIgnoreCase("i"))
+                w = capword(w);
             rtn.append(w.matches(PUNCTUATION) || lastWord == null ? w : " " + w);
             lastWord = w;
         }
