@@ -19,8 +19,8 @@ public class FirstTest {
     static Reader reader = null;
     static List<String> fileText = null;
     static final String readFileName = 
-            "./Bible.txt";
-//        "./KerouacJack-OnTheRoad_djvu.txt");
+//            "./Bible.txt";
+        "./KerouacJack-OnTheRoad_djvu.txt";
     
     @BeforeClass
     public static void getText() throws Exception {
@@ -44,7 +44,7 @@ public class FirstTest {
     }
 
     @Test
-    public void testGenerate() throws Exception {
+    public void testGenerate_OldAndNew() throws Exception {
         Map<String, Map<Node, Node>> freqs = new TreeMap<>();
         
         impl.store(fileText, freqs);
@@ -56,6 +56,21 @@ public class FirstTest {
         impl.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
 
         System.out.println("New Generator");
+        List<List<String>> sections = impl.splitIntoSections(words);
+        String newStr = sections.stream().map(s1 -> impl.formatText(s1)).map(s2 -> impl.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
+        System.out.println(newStr);
+    }
+
+    @Test
+    public void testGenerate() throws Exception {
+        impl.allLowerCase = true;
+        Map<String, Map<Node, Node>> freqs = new TreeMap<>();
+        
+        impl.store(fileText, freqs);
+        
+        int size = 5000;
+        
+        List<String> words = impl.generateText(freqs, size);
         List<List<String>> sections = impl.splitIntoSections(words);
         String newStr = sections.stream().map(s1 -> impl.formatText(s1)).map(s2 -> impl.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
         System.out.println(newStr);

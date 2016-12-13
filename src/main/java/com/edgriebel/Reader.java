@@ -25,11 +25,12 @@ public class Reader {
         Pattern p = Pattern.compile(keepers);
         Pattern d = Pattern.compile(dump);
         while (sc.hasNext()) {
-            String s = sc.next().toLowerCase();
+            String s = sc.next();
             s = p.matcher(s).replaceAll(" $1");
             s = d.matcher(s).replaceAll("");
             if (! s.isEmpty() && !s.matches("^[\\d]+$")) {
-                rtn.addAll(Arrays.asList(s.split(" ")));
+//                rtn.addAll(Arrays.asList(s.split(" ")));
+                Arrays.asList(s.split(" ")).stream().filter(st -> st.length() > 0).forEachOrdered(st -> rtn.add(st));
             }
         }
         return rtn;

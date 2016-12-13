@@ -2,26 +2,29 @@ package com.edgriebel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class First {
 
-    public First() {
-        // TODO Auto-generated constructor stub
-    }
-
+    
     public static final String END_OF_SENTENCE = "[.!?]";
-    public static final String PUNCTUATION = "[.,!]";
+    public static final String PUNCTUATION = "[.,!?]";
     public static int SECTION_WORD_COUNT = 40;
+    
+    public boolean allLowerCase = false;
+    protected Set<String> wordsInCaps = new HashSet<>();
     
     public String capword(String word) {
         return word.substring(0, 1).toUpperCase() + word.substring(1);
     }
+
     
     public void store(List<String> l, Map<String, Map<Node, Node>> freqs) {
         if (l.isEmpty() || l.size() == 1)
@@ -30,25 +33,40 @@ public class First {
         String last = null;
         for (String curr : l) {
             if (last == null) {
-                last = curr;
+                last = curr.toLowerCase();
                 continue;
             }
 
-            Node ft = new Node(curr);
-            
             // use merge()!!
             if (!freqs.containsKey(last)) {
                 freqs.put(last, new TreeMap<>());
             }
-                Map<Node, Node> matches = freqs.get(last);
-                Node res = matches.get(ft);
-                if ( res == null) 
-                    matches.put(ft, ft);
-                else
-                    res.incCount();
+            
+            // System.err.println(curr);
+            assert(last.length() > 0);
+            assert(curr.length() > 0);
+            
+            if (!allLowerCase && !last.matches(PUNCTUATION) && Character.isUpperCase(curr.charAt(0)))
+                wordsInCaps.add(curr.toLowerCase());
                 
-            last = curr;
+            Node ft = new Node(curr.toLowerCase());
+            
+            Map<Node, Node> matches = freqs.get(last);
+            Node res = matches.get(ft);
+            if ( res == null) 
+                matches.put(ft, ft);
+            else
+                res.incCount();
+                
+            last = curr.toLowerCase();
         }
+        
+        System.out.println("Uppercase words: " + freqs.keySet().stream().filter(w -> Character.isUpperCase(w.charAt(0))).collect(Collectors.toList()));
+        assert(allLowerCase ? wordsInCaps.isEmpty() : true);
+        
+        assert(freqs.keySet().stream().noneMatch(s -> Character.isUpperCase(s.charAt(0))));
+        
+        System.err.println("Size of capwords: " + wordsInCaps.size() + " First 10: " + wordsInCaps.stream().limit(10).collect(Collectors.toList()));
     }
     
     public static void setProbability(Collection<Node> nodes) {
@@ -173,7 +191,7 @@ public class First {
             float prob = r.nextFloat();
             Collection<Node> nodesForWord = wordList.get(word).values();
             word = getNextWord(word, nodesForWord, prob);
-            words.add(word);
+            words.add(wordsInCaps.contains(word) ? capword(word) : word);
         }
         return words;
     }
