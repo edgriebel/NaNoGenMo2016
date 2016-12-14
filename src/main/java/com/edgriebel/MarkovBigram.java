@@ -2,46 +2,14 @@ package com.edgriebel;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-public class MarkovBigram {
-
-    
-    public static final String END_OF_SENTENCE = "[.!?]";
-    public static final String PUNCTUATION = "[.,!?]";
-    public static int SECTION_WORD_COUNT = 40;
-    
-    public boolean allLowerCase = false;
-    protected Collection<String> properNouns = new HashSet<>();
-    protected Set<String> falseWordsInCaps = new HashSet<>();
-    
-    public String capword(String word) {
-        return word.substring(0, 1).toUpperCase() + word.substring(1);
-    }
-
-    public Collection<String> findProperNouns(Collection<String> wordList) {
-        // do we need to worry about ignoring words at the start of a sentence
-        // providing a false proper noun signal?
-        
-        Map<Boolean, List<String>> splitWords = wordList
-            .parallelStream()
-            .distinct()
-            .collect(Collectors.partitioningBy(w -> Character.isUpperCase(w.charAt(0))))
-            ;
-        
-        List<String> properNouns = splitWords.get(true).stream().map(String::toLowerCase).collect(Collectors.toList());
-        properNouns.removeAll(splitWords.get(false));
-        
-        return properNouns;
-    }
-
+public class MarkovBigram extends AbstractMarkov 
+{
     public void store(List<String> l, Map<String, Map<Node, Node>> freqs) {
         if (l.isEmpty() || l.size() == 1)
             return;
@@ -93,107 +61,6 @@ public class MarkovBigram {
         nodemap.values().stream().map(n -> n.values()).forEach(MarkovBigram::setProbability);
     }
 
-    public List<List<String>> splitIntoSections(List<String> words) {
-        List<List<String>> rtn = new ArrayList<>();
-
-        List<String> builder = new ArrayList<>();
-        rtn.add(builder);
-        for (int i=0; i<words.size(); i++) {
-            String w = words.get(i);
-
-            builder.add(w);
-
-            if (builder.size() > SECTION_WORD_COUNT && w.matches(END_OF_SENTENCE)) {
-                // generate block
-                //                sb.append("\n\n");
-                builder = new ArrayList<>();
-                rtn.add(builder);
-            }
-        }
-        builder.add(".");
-        return rtn;
-    }
-
-    public String wrapText(String text) {
-        StringBuilder rtn = new StringBuilder();
-        
-        int length = 0;
-        final int linelength = 80;
-
-        for (String word : text.split(" ")) {
-            rtn.append(word).append(" ");
-            // word-wrap line
-            length += word.length() + 1; // one for space
-            if (length >= linelength) {
-                length = 0;
-                rtn.append("\n");
-            }
-        }
-        return rtn.toString();
-    }
-    
-    public String formatText(List<String> words) {
-        // assume 5 characters + space per word
-        StringBuilder rtn = new StringBuilder(words.size() * 6);
-        String lastWord = null;
-        
-        for (String w : words) {
-            if (lastWord == null || lastWord.matches(END_OF_SENTENCE)) {
-                w = capword(w);
-            }
-            if (w.equalsIgnoreCase("i"))
-                w = capword(w);
-            rtn.append(w.matches(PUNCTUATION) || lastWord == null ? w : " " + w);
-            lastWord = w;
-        }
-
-        if (!lastWord.matches(PUNCTUATION))
-            rtn.append(".");
-        
-        return rtn.toString();
-    }
-    
-    public List<String> formatTextOld(List<String> words) {
-        List<String> rtn = new ArrayList<>();
-        
-        StringBuilder sb = new StringBuilder();
-        
-        int wordcount = 0;
-        int length = 0;
-        final int linelength = 80;
-        
-        for (int i=0; i<words.size(); i++) {
-            String w = words.get(i);
-            if (i == 0 || words.get(i-1).matches(END_OF_SENTENCE))
-                w = capword(w);
-
-            sb.append(w.matches(PUNCTUATION) || length == 0 ? w : " " + w);
-            
-            wordcount++;
-            
-            if (wordcount > 40 && w.matches(END_OF_SENTENCE)) {
-                // generate block
-//                sb.append("\n\n");
-                rtn.add(sb.toString());
-                sb = new StringBuilder();
-                wordcount = 0;
-                length = 0;
-            }
-            else {
-                // word-wrap line
-                length += w.length() + (w.matches(PUNCTUATION) ? 0 : 1); // one for space
-                if (length >= linelength && words.get(i+1).length() > 1) {
-                    length = 0;
-                    sb.append("\n");
-                }
-            }
-            
-        }
-        sb.append(".");
-        rtn.add(sb.toString());
-        return rtn;
-    }
-
     public List<String> generateText(Map<String, Map<Node, Node>> wordList, int size) 
     {
         setProbabilities(wordList);
@@ -206,14 +73,9 @@ public class MarkovBigram {
             float prob = r.nextFloat();
             Collection<Node> nodesForWord = wordList.get(word).values();
             word = getNextWord(word, nodesForWord, prob);
-            words.add(properNouns.contains(word) ? capword(word) : word);
+            words.add(properNouns.contains(word) ? Formatter.capword(word) : word);
         }
         return words;
-    }
-
-    public Optional<String> getStartWord(Set<String> words) {
-        int c = (new Random()).nextInt(words.size());
-        return words.stream().filter(word -> !word.matches(MarkovBigram.PUNCTUATION)).skip(c).findFirst();
     }
 
     public String getNextWord(String word, Collection<Node> nodesForWord,

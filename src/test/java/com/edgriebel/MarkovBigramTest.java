@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.IntStream;
 
 import org.junit.*;
 
@@ -32,6 +31,7 @@ public class MarkovBigramTest {
     
     @Test
     public void testGenerateOld() throws Exception {
+
         Map<String, Map<Node, Node>> freqs = new TreeMap<>();
         
         impl.store(fileText, freqs);
@@ -40,7 +40,7 @@ public class MarkovBigramTest {
         
         List<String> words = impl.generateText(freqs, size);
         
-        impl.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
+        formatter.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
     }
 
     @Test
@@ -53,11 +53,11 @@ public class MarkovBigramTest {
         
         List<String> words = impl.generateText(freqs, size);
         System.out.println("Monolithic Generator");
-        impl.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
+        formatter.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
 
         System.out.println("New Generator");
-        List<List<String>> sections = impl.splitIntoSections(words);
-        String newStr = sections.stream().map(s1 -> impl.formatText(s1)).map(s2 -> impl.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
+        List<List<String>> sections = formatter.splitIntoSections(words);
+        String newStr = sections.stream().map(s1 -> formatter.formatText(s1)).map(s2 -> formatter.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
         System.out.println(newStr);
     }
 
@@ -71,36 +71,11 @@ public class MarkovBigramTest {
         int size = 1000;
         
         List<String> words = impl.generateText(freqs, size);
-        List<List<String>> sections = impl.splitIntoSections(words);
-        String newStr = sections.stream().map(s1 -> impl.formatText(s1)).map(s2 -> impl.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
+        List<List<String>> sections = formatter.splitIntoSections(words);
+        String newStr = sections.stream().map(s1 -> formatter.formatText(s1)).map(s2 -> formatter.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
         System.out.println(newStr);
     }
 
-    @Test
-    public void testWrapText() {
-        String stub = "0123456789";
-        String str = IntStream.rangeClosed(1, 10).mapToObj(i -> stub).reduce("", (x,y) -> x += y + "\n");
-        System.out.println("String size: " + str.length());
-        
-        String out = impl.wrapText(str);
-        System.out.println(out);
-        for (String s : out.split("\n")) {
-            System.out.printf("%3d: %s\n", s.length(), s);
-        }
-    }
-    
-    @Test
-    public void testFormatText() {
-        List<String> toTest = Arrays.asList( new String [] {
-                "hello", "world", "."
-        });
-        List<String> l = new ArrayList<>(toTest);
-        
-        String out = impl.formatText(l);
-        System.out.println("Out: " + out);
-        assertEquals(out, toTest.stream().reduce("", (r,s) -> r += (r.equals("") ? impl.capword(s) : ( s.matches(MarkovBigram.PUNCTUATION) ? s : " " + s) )) );
-    }
-    
     @Test
     public void testStore_Small() throws Exception {
         List<String> s = Arrays.asList(
@@ -142,9 +117,11 @@ public class MarkovBigramTest {
     }
 
     MarkovBigram impl;
-    
+    Formatter formatter;
+
     @Before
     public void setupImpl() {
         impl = new MarkovBigram();
+        formatter = new Formatter();
     }
 }
