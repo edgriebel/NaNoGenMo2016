@@ -19,14 +19,29 @@ public class MarkovBigram {
     public static int SECTION_WORD_COUNT = 40;
     
     public boolean allLowerCase = false;
-    protected Set<String> wordsInCaps = new HashSet<>();
+    protected Collection<String> properNouns = new HashSet<>();
     protected Set<String> falseWordsInCaps = new HashSet<>();
     
     public String capword(String word) {
         return word.substring(0, 1).toUpperCase() + word.substring(1);
     }
 
-    
+    public Collection<String> findProperNouns(Collection<String> wordList) {
+        // do we need to worry about ignoring words at the start of a sentence
+        // providing a false proper noun signal?
+        
+        Map<Boolean, List<String>> splitWords = wordList
+            .parallelStream()
+            .distinct()
+            .collect(Collectors.partitioningBy(w -> Character.isUpperCase(w.charAt(0))))
+            ;
+        
+        List<String> properNouns = splitWords.get(true).stream().map(String::toLowerCase).collect(Collectors.toList());
+        properNouns.removeAll(splitWords.get(false));
+        
+        return properNouns;
+    }
+
     public void store(List<String> l, Map<String, Map<Node, Node>> freqs) {
         if (l.isEmpty() || l.size() == 1)
             return;
@@ -48,25 +63,6 @@ public class MarkovBigram {
             assert(last.length() > 0);
             assert(curr.length() > 0);
             
-            if (!allLowerCase && !last.matches(PUNCTUATION)) {
-                // only process words that have uppercase first character
-                if (Character.isUpperCase(curr.charAt(0))) {
-                    // if this has already been found as lowercase then ignore it
-                    if (!falseWordsInCaps.contains(currLC)) {
-                        wordsInCaps.add(currLC);
-                    }
-                    else {
-//                        wordsInCaps.add(currLC);
-                    }
-                }
-                else {
-                    if (wordsInCaps.contains(currLC)) {
-                        wordsInCaps.remove(currLC);
-                        falseWordsInCaps.add(currLC);
-                    }
-                }
-            }
-            
             Node ft = new Node(currLC);
             
             Map<Node, Node> matches = freqs.get(last);
@@ -79,12 +75,13 @@ public class MarkovBigram {
             last = currLC;
         }
         
+        properNouns = findProperNouns(l);
+        
         System.out.println("Uppercase words: " + freqs.keySet().stream().filter(w -> Character.isUpperCase(w.charAt(0))).collect(Collectors.toList()));
-        assert(allLowerCase ? wordsInCaps.isEmpty() : true);
         
         assert(freqs.keySet().stream().noneMatch(s -> Character.isUpperCase(s.charAt(0))));
         
-        System.err.println("Size of capwords: " + wordsInCaps.size() + " First 10: " + wordsInCaps.stream().limit(10).collect(Collectors.toList()));
+        System.err.println("Size of capwords: " + properNouns.size() + " First 10: " + properNouns.stream().limit(10).collect(Collectors.toList()));
     }
     
     public static void setProbability(Collection<Node> nodes) {
@@ -209,7 +206,7 @@ public class MarkovBigram {
             float prob = r.nextFloat();
             Collection<Node> nodesForWord = wordList.get(word).values();
             word = getNextWord(word, nodesForWord, prob);
-            words.add(wordsInCaps.contains(word) ? capword(word) : word);
+            words.add(properNouns.contains(word) ? capword(word) : word);
         }
         return words;
     }
