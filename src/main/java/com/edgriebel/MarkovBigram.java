@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-public class First {
+public class MarkovBigram {
 
     
     public static final String END_OF_SENTENCE = "[.!?]";
@@ -75,7 +75,7 @@ public class First {
     }
 
     public void setProbabilities(Map<String, Map<Node, Node>> nodemap) {
-        nodemap.values().stream().map(n -> n.values()).forEach(First::setProbability);
+        nodemap.values().stream().map(n -> n.values()).forEach(MarkovBigram::setProbability);
     }
 
     public List<List<String>> splitIntoSections(List<String> words) {
@@ -198,7 +198,7 @@ public class First {
 
     public Optional<String> getStartWord(Set<String> words) {
         int c = (new Random()).nextInt(words.size());
-        return words.stream().filter(word -> !word.matches(First.PUNCTUATION)).skip(c).findFirst();
+        return words.stream().filter(word -> !word.matches(MarkovBigram.PUNCTUATION)).skip(c).findFirst();
     }
 
     public String getNextWord(String word, Collection<Node> nodesForWord,

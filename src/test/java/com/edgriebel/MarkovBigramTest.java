@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 
 import org.junit.*;
 
-public class FirstTest {
+public class MarkovBigramTest {
 
     static Reader reader = null;
     static List<String> fileText = null;
@@ -98,7 +98,7 @@ public class FirstTest {
         
         String out = impl.formatText(l);
         System.out.println("Out: " + out);
-        assertEquals(out, toTest.stream().reduce("", (r,s) -> r += (r.equals("") ? impl.capword(s) : ( s.matches(First.PUNCTUATION) ? s : " " + s) )) );
+        assertEquals(out, toTest.stream().reduce("", (r,s) -> r += (r.equals("") ? impl.capword(s) : ( s.matches(MarkovBigram.PUNCTUATION) ? s : " " + s) )) );
     }
     
     @Test
@@ -126,10 +126,10 @@ public class FirstTest {
         Node n = new Node("half");
         n.setCount(1);
         c.add(n);
-        First.setProbability(c);
+        MarkovBigram.setProbability(c);
         assertEquals("Should be 1.0 with a single entry", 1.0d, c.get(0).getFreq(), 0.001);
         c.add(n);
-        First.setProbability(c);
+        MarkovBigram.setProbability(c);
         System.out.println(c);
         assertEquals("Should be 0.5 with two equal counts", 0.5d, c.get(0).getFreq(), 0.001d);
     }
@@ -141,10 +141,10 @@ public class FirstTest {
 //        nodes.put(key, value);
     }
 
-    First impl;
+    MarkovBigram impl;
     
     @Before
     public void setupImpl() {
-        impl = new First();
+        impl = new MarkovBigram();
     }
 }
