@@ -3,14 +3,15 @@
 - Markov Chain
 
 # Next
-- [x] move docs to separate directory 
-- [ ] Reader reads from internet
-- [x] rename "First" to MarkovBigram
-- [ ] Create main() that implements testGenerate()
-- [ ] have First.store() return freqs object instad of requiring it to be passed in
+- [ ] Reader reads from Internet
+- [ ] Create `main()` that implements calls in `testGenerate()`
+- [ ] have `store()` return `freqs` object instead of requiring it to be passed in
 - [ ] implement 3-gram to get better sentences
-- [ ] better determination of proper nouns
 - [ ] More unit tests
+- [ ] find lib to do word-wrap
+- [x] better determination of proper nouns
+- [x] move docs to separate directory 
+- [x] rename "First" to MarkovBigram
 
 # Bugs
 - [ ] sometimes period appears after other punctuation

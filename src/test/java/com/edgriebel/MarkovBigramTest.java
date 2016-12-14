@@ -19,8 +19,8 @@ public class MarkovBigramTest {
     static Reader reader = null;
     static List<String> fileText = null;
     static final String readFileName = 
-//            "docs/Bible.txt";
-        "docs/KerouacJack-OnTheRoad_djvu.txt";
+            "docs/Bible.txt";
+//        "docs/KerouacJack-OnTheRoad_djvu.txt";
     
     @BeforeClass
     public static void getText() throws Exception {
@@ -63,12 +63,12 @@ public class MarkovBigramTest {
 
     @Test
     public void testGenerate() throws Exception {
-        impl.allLowerCase = true;
+//        impl.allLowerCase = true;
         Map<String, Map<Node, Node>> freqs = new TreeMap<>();
         
         impl.store(fileText, freqs);
         
-        int size = 5000;
+        int size = 1000;
         
         List<String> words = impl.generateText(freqs, size);
         List<List<String>> sections = impl.splitIntoSections(words);

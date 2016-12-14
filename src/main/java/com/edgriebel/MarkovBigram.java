@@ -20,6 +20,7 @@ public class MarkovBigram {
     
     public boolean allLowerCase = false;
     protected Set<String> wordsInCaps = new HashSet<>();
+    protected Set<String> falseWordsInCaps = new HashSet<>();
     
     public String capword(String word) {
         return word.substring(0, 1).toUpperCase() + word.substring(1);
@@ -32,6 +33,7 @@ public class MarkovBigram {
         
         String last = null;
         for (String curr : l) {
+            final String currLC = curr.toLowerCase();
             if (last == null) {
                 last = curr.toLowerCase();
                 continue;
@@ -46,10 +48,26 @@ public class MarkovBigram {
             assert(last.length() > 0);
             assert(curr.length() > 0);
             
-            if (!allLowerCase && !last.matches(PUNCTUATION) && Character.isUpperCase(curr.charAt(0)))
-                wordsInCaps.add(curr.toLowerCase());
-                
-            Node ft = new Node(curr.toLowerCase());
+            if (!allLowerCase && !last.matches(PUNCTUATION)) {
+                // only process words that have uppercase first character
+                if (Character.isUpperCase(curr.charAt(0))) {
+                    // if this has already been found as lowercase then ignore it
+                    if (!falseWordsInCaps.contains(currLC)) {
+                        wordsInCaps.add(currLC);
+                    }
+                    else {
+//                        wordsInCaps.add(currLC);
+                    }
+                }
+                else {
+                    if (wordsInCaps.contains(currLC)) {
+                        wordsInCaps.remove(currLC);
+                        falseWordsInCaps.add(currLC);
+                    }
+                }
+            }
+            
+            Node ft = new Node(currLC);
             
             Map<Node, Node> matches = freqs.get(last);
             Node res = matches.get(ft);
@@ -58,7 +76,7 @@ public class MarkovBigram {
             else
                 res.incCount();
                 
-            last = curr.toLowerCase();
+            last = currLC;
         }
         
         System.out.println("Uppercase words: " + freqs.keySet().stream().filter(w -> Character.isUpperCase(w.charAt(0))).collect(Collectors.toList()));
