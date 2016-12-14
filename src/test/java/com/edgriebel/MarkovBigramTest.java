@@ -19,8 +19,8 @@ public class MarkovBigramTest {
     static Reader reader = null;
     static List<String> fileText = null;
     static final String readFileName = 
-//            "./Bible.txt";
-        "./KerouacJack-OnTheRoad_djvu.txt";
+//            "docs/Bible.txt";
+        "docs/KerouacJack-OnTheRoad_djvu.txt";
     
     @BeforeClass
     public static void getText() throws Exception {

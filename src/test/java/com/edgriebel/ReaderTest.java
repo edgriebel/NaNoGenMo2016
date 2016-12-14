@@ -14,7 +14,7 @@ public class ReaderTest {
     @Test
     public void testRead_bible_luke_txt() throws Exception {
         System.out.println(new File(".").getCanonicalPath());
-        File f = new File("./bible-luke.txt");
+        File f = new File("docs/bible-luke.txt");
         List<String> s = impl.read(f);
         System.out.println(s);
     }
@@ -30,7 +30,7 @@ public class ReaderTest {
 
     @Test
         public void testRead_shorttxt() throws Exception {
-            File f = new File("./short.txt");
+            File f = new File("docs/short.txt");
             List<String> s = impl.read(f);
             System.out.println(s);
     //        assertThat(s, contains("."));
