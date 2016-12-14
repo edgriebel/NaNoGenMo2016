@@ -31,27 +31,22 @@ public class MarkovBigramTest {
     
     @Test
     public void testGenerateOld() throws Exception {
-
-        Map<String, Map<Node, Node>> freqs = new TreeMap<>();
-        
-        impl.store(fileText, freqs);
+        impl.store(fileText);
         
         int size = 1000;
         
-        List<String> words = impl.generateText(freqs, size);
+        List<String> words = impl.generateText(size);
         
         formatter.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
     }
 
     @Test
     public void testGenerate_OldAndNew() throws Exception {
-        Map<String, Map<Node, Node>> freqs = new TreeMap<>();
-        
-        impl.store(fileText, freqs);
+        impl.store(fileText);
         
         int size = 400;
         
-        List<String> words = impl.generateText(freqs, size);
+        List<String> words = impl.generateText(size);
         System.out.println("Monolithic Generator");
         formatter.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
 
@@ -64,13 +59,11 @@ public class MarkovBigramTest {
     @Test
     public void testGenerate() throws Exception {
 //        impl.allLowerCase = true;
-        Map<String, Map<Node, Node>> freqs = new TreeMap<>();
-        
-        impl.store(fileText, freqs);
+        impl.store(fileText);
         
         int size = 1000;
         
-        List<String> words = impl.generateText(freqs, size);
+        List<String> words = impl.generateText(size);
         List<List<String>> sections = formatter.splitIntoSections(words);
         String newStr = sections.stream().map(s1 -> formatter.formatText(s1)).map(s2 -> formatter.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
         System.out.println(newStr);
@@ -82,16 +75,14 @@ public class MarkovBigramTest {
                 "Hello there".split("\\s")
                 );
         
-        
-        Map<String, Map<Node, Node>> freqs = new TreeMap<>();
-        impl.store(s, freqs );
-        System.out.println(freqs.keySet());
+        impl.store(s);
+        System.out.println(impl.wordFrequencies.keySet());
     }
     
     @Test
     public void testStore_Luke() throws Exception {
         Map<String, Map<Node, Node>> freqs = new TreeMap<>();
-        impl.store(fileText, freqs);
+        impl.store(fileText);
         freqs.entrySet().stream().limit(100).forEach(System.out::println);
     }
     

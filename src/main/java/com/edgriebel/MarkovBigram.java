@@ -2,6 +2,7 @@ package com.edgriebel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -10,7 +11,13 @@ import java.util.stream.Collectors;
 
 public class MarkovBigram extends AbstractMarkov 
 {
-    public void store(List<String> l, Map<String, Map<Node, Node>> freqs) {
+    protected Map<String, Map<Node, Node>> wordFrequencies;
+    
+    public MarkovBigram() {
+        wordFrequencies = new HashMap<>();
+    }
+    
+    public void store(List<String> l) {
         if (l.isEmpty() || l.size() == 1)
             return;
         
@@ -23,8 +30,8 @@ public class MarkovBigram extends AbstractMarkov
             }
 
             // use merge()!!
-            if (!freqs.containsKey(last)) {
-                freqs.put(last, new TreeMap<>());
+            if (!wordFrequencies.containsKey(last)) {
+                wordFrequencies.put(last, new TreeMap<>());
             }
             
             // System.err.println(curr);
@@ -33,7 +40,7 @@ public class MarkovBigram extends AbstractMarkov
             
             Node ft = new Node(currLC);
             
-            Map<Node, Node> matches = freqs.get(last);
+            Map<Node, Node> matches = wordFrequencies.get(last);
             Node res = matches.get(ft);
             if ( res == null) 
                 matches.put(ft, ft);
@@ -45,9 +52,9 @@ public class MarkovBigram extends AbstractMarkov
         
         properNouns = findProperNouns(l);
         
-        System.out.println("Uppercase words: " + freqs.keySet().stream().filter(w -> Character.isUpperCase(w.charAt(0))).collect(Collectors.toList()));
+        System.out.println("Uppercase words: " + wordFrequencies.keySet().stream().filter(w -> Character.isUpperCase(w.charAt(0))).collect(Collectors.toList()));
         
-        assert(freqs.keySet().stream().noneMatch(s -> Character.isUpperCase(s.charAt(0))));
+        assert(wordFrequencies.keySet().stream().noneMatch(s -> Character.isUpperCase(s.charAt(0))));
         
         System.err.println("Size of capwords: " + properNouns.size() + " First 10: " + properNouns.stream().limit(10).collect(Collectors.toList()));
     }
@@ -57,21 +64,21 @@ public class MarkovBigram extends AbstractMarkov
         nodes.parallelStream().forEach(n -> n.setFreq(n.getCount() / sumCount));
     }
 
-    public void setProbabilities(Map<String, Map<Node, Node>> nodemap) {
-        nodemap.values().stream().map(n -> n.values()).forEach(MarkovBigram::setProbability);
+    public void setProbabilities() {
+        wordFrequencies.values().stream().map(n -> n.values()).forEach(MarkovBigram::setProbability);
     }
 
-    public List<String> generateText(Map<String, Map<Node, Node>> wordList, int size) 
+    public List<String> generateText(int size) 
     {
-        setProbabilities(wordList);
+        setProbabilities();
     
         List<String> words = new ArrayList<>(size);
         Random r = new Random();
-        String word = getStartWord(wordList.keySet()).get();
+        String word = getStartWord(wordFrequencies.keySet()).get();
         words.add(word);
         for (int i=1; i<size; i++) {
             float prob = r.nextFloat();
-            Collection<Node> nodesForWord = wordList.get(word).values();
+            Collection<Node> nodesForWord = wordFrequencies.get(word).values();
             word = getNextWord(word, nodesForWord, prob);
             words.add(properNouns.contains(word) ? Formatter.capword(word) : word);
         }
