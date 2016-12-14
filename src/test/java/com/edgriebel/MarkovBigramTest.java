@@ -30,46 +30,6 @@ public class MarkovBigramTest {
     }
     
     @Test
-    public void testGenerateOld() throws Exception {
-        impl.store(fileText);
-        
-        int size = 1000;
-        
-        List<String> words = impl.generateText(size);
-        
-        formatter.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
-    }
-
-    @Test
-    public void testGenerate_OldAndNew() throws Exception {
-        impl.store(fileText);
-        
-        int size = 400;
-        
-        List<String> words = impl.generateText(size);
-        System.out.println("Monolithic Generator");
-        formatter.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
-
-        System.out.println("New Generator");
-        List<List<String>> sections = formatter.splitIntoSections(words);
-        String newStr = sections.stream().map(s1 -> formatter.formatText(s1)).map(s2 -> formatter.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
-        System.out.println(newStr);
-    }
-
-    @Test
-    public void testGenerate() throws Exception {
-//        impl.allLowerCase = true;
-        impl.store(fileText);
-        
-        int size = 1000;
-        
-        List<String> words = impl.generateText(size);
-        List<List<String>> sections = formatter.splitIntoSections(words);
-        String newStr = sections.stream().map(s1 -> formatter.formatText(s1)).map(s2 -> formatter.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
-        System.out.println(newStr);
-    }
-
-    @Test
     public void testStore_Small() throws Exception {
         List<String> s = Arrays.asList(
                 "Hello there".split("\\s")

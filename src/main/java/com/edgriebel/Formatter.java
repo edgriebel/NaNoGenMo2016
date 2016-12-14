@@ -8,6 +8,7 @@ public class Formatter {
     public static final String END_OF_SENTENCE = "[.!?]";
     public static final String PUNCTUATION = "[.,!?]";
     public static int SECTION_WORD_COUNT = 40;
+    public static final int linelength = 80;
 
     public Formatter() {
         // TODO Auto-generated constructor stub
@@ -41,7 +42,6 @@ public class Formatter {
             
             int wordcount = 0;
             int length = 0;
-            final int linelength = 80;
             
             for (int i=0; i<words.size(); i++) {
                 String w = words.get(i);

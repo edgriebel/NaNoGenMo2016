@@ -4,10 +4,12 @@
 
 # Next
 - [ ] Reader reads from Internet
-- [ ] Create `main()` that implements calls in `testGenerate()`
 - [ ] implement 3-gram to get better sentences
 - [ ] More unit tests
 - [ ] find lib to do word-wrap
+- [ ] Create `main()` that implements calls in `testGenerate()`
+ - [x] half-done, methods moved out of `MarkovBigramTest`
+ - [ ] implement parsing of cmdline args
 - [x] better determination of proper nouns
 - [x] move docs to separate directory 
 - [x] rename "First" to MarkovBigram

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class MarkovBigram extends AbstractMarkov 
 {
+    // protected so it can be used in unit tests
     protected Map<String, Map<Node, Node>> wordFrequencies;
     
     public MarkovBigram() {
