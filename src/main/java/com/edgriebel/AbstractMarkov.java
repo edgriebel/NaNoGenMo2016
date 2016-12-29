@@ -9,7 +9,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class AbstractMarkov {
+public abstract class AbstractMarkov implements IMarkov
+{
 
     public boolean allLowerCase = false;
     protected Collection<String> properNouns = new HashSet<>();
@@ -34,9 +35,10 @@ public abstract class AbstractMarkov {
         return properNouns;
     }
 
-    public Optional<String> getStartWord(Set<String> words) {
+    public Optional<String> getStartWord(Collection<String> words) {
         int c = (new Random()).nextInt(words.size());
         return words.stream().filter(word -> !word.matches(Formatter.PUNCTUATION)).skip(c).findFirst();
     }
+
 
 }

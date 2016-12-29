@@ -1,6 +1,6 @@
 package com.edgriebel;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +36,36 @@ public class FormatterTest {
             System.out.printf("%3d: %s\n", s.length(), s);
         }
     }
+
+    @Test
+    public void testWrapText_TwoLines() {
+        String stub = "word ";
+        String text = IntStream.rangeClosed(1, Math.round(Formatter.linelength * 1.5F / stub.length())).mapToObj(i -> stub).reduce("", (x,y) -> x += y);
+        
+        String out = impl.wrapText(text);
+        System.out.printf("<START>%s<END>\n", out);
+        assertEquals("Should be two lines", 1, out.replaceAll("[^\\n]+","").length());
+    }
+
+    @Test
+    public void testFormatText_Small() {
+        List<String> smallText = Arrays.asList("This is a small list".split(" "));
+        
+        String out = impl.formatText(smallText);
+        System.out.printf("<START>%s<END>\n", out);
+        assertTrue("Should be capital at start", Character.isUpperCase(out.charAt(0)));
+        assertEquals("Should be period at end", '.', out.charAt(out.length()-1));
+    }
+    
+    @Test
+    public void testWrapText_Small() {
+        String smallText = "This is a small list";
+        
+        String out = impl.wrapText(smallText);
+        System.out.printf("<START>%s<END>\n", out);
+        assertEquals("Should only be one line", 0, out.replaceAll("[^\\n]+","").length());
+    }
+    
 
     Formatter impl;
     

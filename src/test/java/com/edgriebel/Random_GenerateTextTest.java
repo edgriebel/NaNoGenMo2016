@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class GenerateTextTest {
+public class Random_GenerateTextTest {
     static Reader reader = null;
     static List<String> fileText = null;
     static final String readFileName = 
@@ -27,7 +27,7 @@ public class GenerateTextTest {
     @Test
     public void testGenerateAndFormat() throws Exception {
 //        impl.allLowerCase = true;
-        IMarkov markov = new MarkovBigram();
+        IMarkov markov = new MarkovRandom();
         Formatter f = new Formatter();
         
         String out = impl.generateAndFormatText(1000, fileText, markov, f);
@@ -35,36 +35,6 @@ public class GenerateTextTest {
         System.out.println(out);
     }
     
-
-    /*
-    @Test
-    public void testGenerate_OldAndNew() throws Exception {
-        impl.store(fileText);
-        
-        int size = 400;
-        
-        List<String> words = impl.generateText(size);
-        System.out.println("Monolithic Generator");
-        formatter.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
-    
-        System.out.println("New Generator");
-        List<List<String>> sections = formatter.splitIntoSections(words);
-        String newStr = sections.stream().map(s1 -> formatter.formatText(s1)).map(s2 -> formatter.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
-        System.out.println(newStr);
-    }
-
-    @Test
-    public void testGenerateOld() throws Exception {
-        impl.store(fileText);
-        
-        int size = 1000;
-        
-        List<String> words = impl.generateText(size);
-        
-        formatter.formatTextOld(words).stream().forEach(str -> System.out.println(str + "\n"));
-    }
-    */
-
     GenerateText impl;
     
     @Before

@@ -52,10 +52,10 @@ public class MarkovBigramTest {
         Node n = new Node("half");
         n.setCount(1);
         c.add(n);
-        MarkovBigram.setProbability(c);
+        impl.setProbability(c);
         assertEquals("Should be 1.0 with a single entry", 1.0d, c.get(0).getFreq(), 0.001);
         c.add(n);
-        MarkovBigram.setProbability(c);
+        impl.setProbability(c);
         System.out.println(c);
         assertEquals("Should be 0.5 with two equal counts", 0.5d, c.get(0).getFreq(), 0.001d);
     }

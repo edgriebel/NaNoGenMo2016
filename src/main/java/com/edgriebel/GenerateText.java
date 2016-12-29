@@ -8,7 +8,7 @@ public class GenerateText {
         // TODO Auto-generated constructor stub
     }
 
-    public List<String> generateText(int size, List<String> words, MarkovBigram markov)
+    public List<String> generateText(int size, List<String> words, IMarkov markov)
     {
         markov.store(words);
         List<String> text = markov.generateText(size);
@@ -23,7 +23,7 @@ public class GenerateText {
     }
 
     /**
-     * convenience method that calls {@link #generateText(int, List, MarkovBigram)} then {@link #formatText(List, Formatter)}
+     * convenience method that calls {@link #generateText(int, List, IMarkov)} then {@link #formatText(List, Formatter)}
      * 
      * @param size
      * @param words
@@ -31,7 +31,7 @@ public class GenerateText {
      * @param f
      * @return
      */
-    public String generateAndFormatText(int size, List<String> words, MarkovBigram markov, Formatter f)
+    public String generateAndFormatText(int size, List<String> words, IMarkov markov, Formatter f)
     {
        List<String> text = generateText(size, words, markov);
        String formattedText = formatText(text, f);
