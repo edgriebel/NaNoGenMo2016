@@ -18,7 +18,7 @@ public class GenerateText {
     public String formatText(List<String> words, Formatter f)
     {
         List<List<String>> sections = f.splitIntoSections(words);
-        String newStr = sections.stream().map(s1 -> f.formatText(s1)).map(s2 -> f.wrapText(s2)).reduce("", (x, y) -> x += y + "\n\n");
+        String newStr = sections.stream().map(s1 -> f.formatText(s1)).map(s2 -> f.wrapText(s2, 80)).reduce("", (x, y) -> x += y + "\n\n");
         return newStr;
     }
 

@@ -1,14 +1,14 @@
 package com.edgriebel;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 public class FormatterTest {
 
@@ -30,7 +30,7 @@ public class FormatterTest {
         String str = IntStream.rangeClosed(1, 10).mapToObj(i -> stub).reduce("", (x,y) -> x += y + "\n");
         System.out.println("String size: " + str.length());
         
-        String out = impl.wrapText(str);
+        String out = impl.wrapText(str, 80);
         System.out.println(out);
         for (String s : out.split("\n")) {
             System.out.printf("%3d: %s\n", s.length(), s);
@@ -42,9 +42,9 @@ public class FormatterTest {
         String stub = "word ";
         String text = IntStream.rangeClosed(1, Math.round(Formatter.linelength * 1.5F / stub.length())).mapToObj(i -> stub).reduce("", (x,y) -> x += y);
         
-        String out = impl.wrapText(text);
+        String out = impl.wrapText(text, 80);
         System.out.printf("<START>%s<END>\n", out);
-        assertEquals("Should be two lines", 1, out.replaceAll("[^\\n]+","").length());
+        assertThat("Should be two lines", out.replaceAll("[^\\n]+","").length(), is(1));
     }
 
     @Test
@@ -54,16 +54,16 @@ public class FormatterTest {
         String out = impl.formatText(smallText);
         System.out.printf("<START>%s<END>\n", out);
         assertTrue("Should be capital at start", Character.isUpperCase(out.charAt(0)));
-        assertEquals("Should be period at end", '.', out.charAt(out.length()-1));
+        assertThat("Should be period at end", out.charAt(out.length()-1), is('.'));
     }
     
     @Test
     public void testWrapText_Small() {
         String smallText = "This is a small list";
         
-        String out = impl.wrapText(smallText);
+        String out = impl.wrapText(smallText, 80);
         System.out.printf("<START>%s<END>\n", out);
-        assertEquals("Should only be one line", 0, out.replaceAll("[^\\n]+","").length());
+        assertThat("Should only be one line", out.replaceAll("[^\\n]+",""), is(""));
     }
     
 

@@ -15,8 +15,19 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>[4.0,)</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.apache.commons</groupId>
+    	<artifactId>commons-lang3</artifactId>
+    	<version>[2,)</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.hamcrest</groupId>
+    	<artifactId>hamcrest-junit</artifactId>
+    	<scope>test</scope>
+    	<version>[2,)</version>
     </dependency>
   </dependencies>
 </project>

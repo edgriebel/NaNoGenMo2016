@@ -1,7 +1,7 @@
 package com.edgriebel;
 
 import static org.junit.Assert.*;
-//import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.junit.*;
 
@@ -36,14 +36,50 @@ public class MarkovBigramTest {
                 );
         
         impl.store(s);
-        System.out.println(impl.wordFrequencies.keySet());
+        System.out.println(((MarkovBigram)impl).wordFrequencies.keySet());
     }
     
     @Test
-    public void testStore_Luke() throws Exception {
-        Map<String, Map<Node, Node>> freqs = new TreeMap<>();
+    public void testStore_FourWords() throws Exception {
+        List<String> s = Arrays.asList(
+                "One Two Three Four".split("\\s")
+                );
+        
+        impl.store(s);
+        assertThat(((MarkovBigram)impl).wordFrequencies.keySet(), hasSize(3));
+        assertThat(((MarkovBigram)impl).wordFrequencies.keySet(), 
+                containsInAnyOrder(s.stream()
+                        .limit(3) // we know only the first 3 will be in the set
+                        .map(String::toLowerCase)
+                        .collect(Collectors.toList()).toArray())
+                );
+
+        System.out.println(((MarkovBigram)impl).wordFrequencies.keySet());
+        
+    }
+    
+    @Test
+    public void testFindProperNouns_Small() throws Exception {
+        List<String> s = Arrays.asList(
+                "Hello World".split("\\s")
+                );
+        List<String> s_toLowerCase = s.stream().map(String::toLowerCase).collect(Collectors.toList());
+        
+        assertThat(((MarkovBigram)impl).findProperNouns(s), allOf(hasSize(2), containsInAnyOrder(s_toLowerCase.toArray())));
+        
+        assertThat("no uppercase words should be found in set of lowercase words", ((MarkovBigram)impl).findProperNouns(s_toLowerCase), hasSize(0));
+        
+        // now check that method embedded in store() works
+        impl.store(s);
+        assertThat(((MarkovBigram)impl).properNouns, allOf(hasSize(2), containsInAnyOrder(s_toLowerCase.toArray())));
+    }
+    
+    @Test
+    public void testStore_FullFile() throws Exception {
         impl.store(fileText);
-        freqs.entrySet().stream().limit(100).forEach(System.out::println);
+        
+        assertThat(((MarkovBigram)impl).wordFrequencies.entrySet(), allOf(notNullValue(), not(empty())));
+        ((MarkovBigram)impl).wordFrequencies.entrySet().stream().limit(20).forEach(System.out::println);
     }
     
     @Test
@@ -53,11 +89,11 @@ public class MarkovBigramTest {
         n.setCount(1);
         c.add(n);
         impl.setProbability(c);
-        assertEquals("Should be 1.0 with a single entry", 1.0d, c.get(0).getFreq(), 0.001);
+        assertThat("Should be 1.0 with a single entry", c.get(0).getFreq(), closeTo(1.0, 0.001));
         c.add(n);
         impl.setProbability(c);
         System.out.println(c);
-        assertEquals("Should be 0.5 with two equal counts", 0.5d, c.get(0).getFreq(), 0.001d);
+        assertThat("Should be 0.5 with two equal counts", c.get(0).getFreq(), closeTo(0.5d, 0.001d));
     }
     
     @Test
@@ -67,7 +103,7 @@ public class MarkovBigramTest {
 //        nodes.put(key, value);
     }
 
-    MarkovBigram impl;
+    IMarkov impl;
     Formatter formatter;
 
     @Before

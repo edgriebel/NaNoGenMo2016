@@ -6,15 +6,9 @@
 - [ ] Reader reads from Internet
 - [ ] implement 3-gram to get better sentences
 - [ ] More unit tests
-- [ ] find lib to do word-wrap
 - [ ] Create `main()` that implements calls in `testGenerate()`
  - [x] half-done, methods moved out of `MarkovBigramTest`
  - [ ] implement parsing of cmdline args
-- [x] better determination of proper nouns
-- [x] move docs to separate directory 
-- [x] rename "First" to MarkovBigram
-- [x] have `store()` return `freqs` object instead of requiring it to be passed in
- - Made `freqs` an instance field so it's not passed around
 
 # Bugs
 - [ ] sometimes period appears after other punctuation
@@ -27,3 +21,14 @@
 
 # Questions
 - should `freqs` be an instance field or input/returned making the class "super-functional" with no stored state?
+
+----
+
+# Done
+- [x] better determination of proper nouns
+- [x] move docs to separate directory 
+- [x] rename "First" to MarkovBigram
+- [x] have `store()` return `freqs` object instead of requiring it to be passed in
+ - Made `freqs` an instance field so it's not passed around
+- [x] find lib to do word-wrap
+ - Good old Apache Commons
