@@ -30,4 +30,32 @@
     	<version>[2,)</version>
     </dependency>
   </dependencies>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.github.fracpete</groupId>
+          <artifactId>latex-maven-plugin</artifactId>
+          <version>1.4.2</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>latex</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <forceBuild>true</forceBuild>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>com.github.fracpete</groupId>
+        <artifactId>latex-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+    </build>
 </project>

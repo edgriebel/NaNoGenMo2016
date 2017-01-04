@@ -32,3 +32,4 @@
  - Made `freqs` an instance field so it's not passed around
 - [x] find lib to do word-wrap
  - Good old Apache Commons
+- LaTeX output
