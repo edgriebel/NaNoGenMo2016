@@ -2,7 +2,11 @@
 - N-gram https://en.wikipedia.org/wiki/N-gram
 - Markov Chain
 
-# Next
+# Setup
+- Install your favorite version of LaTeX (Either MikTeX or LiveTeX should work on Windows)
+ - Generate LaTeX output with `mvn latex:latex`
+
+# Next Tasks
 - [ ] Reader reads from Internet
 - [ ] implement 3-gram to get better sentences
 - [ ] More unit tests
