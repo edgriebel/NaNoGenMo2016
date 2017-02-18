@@ -5,14 +5,15 @@ import java.util.List;
 
 public interface IMarkov {
 
-    public void store(List<String> l);
+    void store(List<String> l);
     
-    public void setProbability(Collection<? extends Node> nodes);
+    void setProbability(Collection<? extends Node> nodes);
 
-    public List<String> generateText(int numberOfWords);
+    List<String> generateText(int numberOfWords);
     
-    public String getNextWord(String word, Collection<? extends Node> nodesForWord, float probability);
+    String getNextWord(String... word);
 
-    public void setProbabilities();
+    void setProbabilities();
 
+    String getStartWord();
 }

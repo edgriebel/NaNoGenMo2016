@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 public class MarkovRandom extends AbstractMarkov 
 {
     // protected so it can be used in unit tests
-    protected Map<String, Map<Node, Node>> wordFrequencies;
     protected Map<String, Integer> wordCounts;
+    protected List<String> allWords;
     
     public MarkovRandom() {
-        wordFrequencies = new HashMap<>();
         wordCounts = new HashMap<>();
+        allWords = new ArrayList<>();
     }
     
     @Override
@@ -25,12 +25,13 @@ public class MarkovRandom extends AbstractMarkov
         if (l.isEmpty() || l.size() == 1)
             return;
         
-        l.forEach(word -> wordFrequencies.put(word.toLowerCase(), Collections.emptyMap()));
-        l.forEach(word -> wordCounts.merge(word, 1, Integer::sum));
+        l.forEach(word -> wordCounts.merge(word.toLowerCase(), 1, Integer::sum));
+        
+        l.forEach(word -> allWords.add(word.toLowerCase()));
         
         properNouns = findProperNouns(l);
         
-        assert(wordFrequencies.keySet().stream().noneMatch(s -> Character.isUpperCase(s.charAt(0))));
+        assert(allWords.stream().noneMatch(s -> Character.isUpperCase(s.charAt(0))));
         
         System.err.println("Size of capwords: " + properNouns.size() + " First 10: " + properNouns.stream().limit(10).collect(Collectors.toList()));
     }
@@ -45,37 +46,18 @@ public class MarkovRandom extends AbstractMarkov
         // do nothing
     }
 
-    @Override
-    public List<String> generateText(int size) 
-    {
-        setProbabilities();
-        Collection<String> wordList = wordFrequencies.keySet();
-    
-        List<String> words = new ArrayList<>(size);
-        Random r = new Random();
-        // should be based on most popular word?
-        String word = getStartWord(wordList).get();
-        words.add(word);
-        for (int i=1; i<size; i++) {
-            float prob = r.nextFloat();
-            word = wordList.stream().skip(Math.round(Math.floor(prob * wordList.size()))).findFirst().get();
-            words.add(properNouns.contains(word) ? Formatter.capword(word) : word);
-        }
-        return words;
-    }
+    private Random r = new Random();
 
     @Override
-    public String getNextWord(String word, Collection<? extends Node> nodesForWord,
-            float probability) {
-        double sum = 0;
-        for (Node n : nodesForWord) {
-            sum += n.getFreq();
-            if (probability < sum) {
-                word = n.getFrom();
-                break;
-            }
-        }
-        return word;
+    public String getStartWord() {
+        int c = (new Random()).nextInt(wordCounts.keySet().size());
+        return wordCounts.keySet().stream().filter(word -> !word.matches(Formatter.PUNCTUATION)).skip(c).findFirst().get();
+    }
+    
+    @Override
+    public String getNextWord(String... word) {
+        int nextWord = r.nextInt(wordCounts.size());
+        return allWords.get(nextWord);
     }
     
 }

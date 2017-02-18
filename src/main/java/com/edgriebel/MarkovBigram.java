@@ -1,6 +1,5 @@
 package com.edgriebel;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -72,36 +71,34 @@ public class MarkovBigram extends AbstractMarkov
         wordFrequencies.values().stream().map(n -> n.values()).forEach(this::setProbability);
     }
 
-    @Override
-    public List<String> generateText(int size) 
-    {
-        setProbabilities();
+    private Random r = new Random();
     
-        List<String> words = new ArrayList<>(size);
-        Random r = new Random();
-        String word = getStartWord(wordFrequencies.keySet()).get();
-        words.add(word);
-        for (int i=1; i<size; i++) {
-            float prob = r.nextFloat();
-            Collection<Node> nodesForWord = wordFrequencies.get(word).values();
-            word = getNextWord(word, nodesForWord, prob);
-            words.add(properNouns.contains(word) ? Formatter.capword(word) : word);
-        }
-        return words;
+    public Collection<? extends Node> lookupNodes(String... word) {
+        Collection<Node> nodesForWord = wordFrequencies.get(word[0]).values();
+        return nodesForWord;
     }
-
+    
     @Override
-    public String getNextWord(String word, Collection<? extends Node> nodesForWord,
-            float probability) {
+    public String getStartWord() {
+        int c = (new Random()).nextInt(wordFrequencies.keySet().size());
+        return wordFrequencies.keySet().stream().filter(word -> !word.matches(Formatter.PUNCTUATION)).skip(c).findFirst().get();
+    }
+    
+    @Override
+    public String getNextWord(String... word) {
+        float prob = r.nextFloat();
         double sum = 0;
-        for (Node n : nodesForWord) {
+        String foundWord = null;
+        
+        Collection<? extends Node> possibleWords = lookupNodes(word);
+        for (Node n : possibleWords) {
             sum += n.getFreq();
-            if (probability < sum) {
-                word = n.getFrom();
+            if (prob < sum) {
+                foundWord = n.getFrom();
                 break;
             }
         }
-        return word;
+        return foundWord;
     }
-    
+
 }

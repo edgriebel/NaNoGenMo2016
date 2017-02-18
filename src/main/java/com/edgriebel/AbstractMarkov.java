@@ -1,11 +1,10 @@
 package com.edgriebel;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public abstract class AbstractMarkov implements IMarkov
@@ -34,10 +33,19 @@ public abstract class AbstractMarkov implements IMarkov
         return properNouns;
     }
 
-    public Optional<String> getStartWord(Collection<String> words) {
-        int c = (new Random()).nextInt(words.size());
-        return words.stream().filter(word -> !word.matches(Formatter.PUNCTUATION)).skip(c).findFirst();
+    @Override
+    public List<String> generateText(int size) 
+    {
+        setProbabilities();
+    
+        List<String> words = new ArrayList<>(size);
+        String word = getStartWord();
+        words.add(word);
+        for (int i=1; i<size; i++) {
+            word = getNextWord(word);
+            words.add(properNouns.contains(word) ? Formatter.capword(word) : word);
+        }
+        return words;
     }
-
-
+    
 }
