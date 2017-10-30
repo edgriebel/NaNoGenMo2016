@@ -2,3 +2,4 @@
 *~
 target/
 /eclipse-target/
+!.travis.yml

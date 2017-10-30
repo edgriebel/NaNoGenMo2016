@@ -8,16 +8,19 @@
 - Install your favorite version of LaTeX (Either MikTeX or LiveTeX should work on Windows)
 
 # Basic Execution
-- mvn ...
-- [mvn launch to generate code]
+## Build app
+- mvn test
+## Running generator
+- _steps..._
+## Generating pdf document:
 - mvn latex:latex
  - Generate LaTeX output with `mvn latex:latex`
  - requires "story.txt" in top directory (change path in `\\input{}` to change location)
  - pdf file is in target/latex/book/book.pdf
 
-(find mvn cmdline that runs all at once??)
+_(find mvn cmdline that runs all at once)_
 
-# Commandline Arguments
+# Suggested Commandline Arguments
 - Word count
 - Source filename 
 - Destination file (and/or directory?)
@@ -38,11 +41,11 @@
   - [ ] Create unit test demonstrating it
 
 # Ideas:
-- html: hover display words that could have been chosen and probs
+- html: hover display words that could have been chosen and probabilities for each
 - variable-length sentences (would require bayesian-type methods?)
 
 # Questions
-- should `freqs` be an instance field or input/returned making the class "super-functional" with no stored state?
+- should `freqs` be an instance field or input/returned making the class "pure functional" with no stored state?
 
 ----
 
