@@ -1,1 +1,4 @@
+sudo: enabled
+install:
+  - sudo apt-get install texlive
 language: java
