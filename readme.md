@@ -1,6 +1,8 @@
 # About
 - N-gram https://en.wikipedia.org/wiki/N-gram
 - Markov Chain
+- Created for [NaNoGenMo 2016](https://github.com/NaNoGenMo/2016) (National November Generated fiction Month)
+- See [NaNoGenMo2017](https://github.com/edgriebel/NaNoGenMo2017) for this year's version
 
 # Setup
 - Install Java 8+ JDK
